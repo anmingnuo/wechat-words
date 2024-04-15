@@ -3,24 +3,196 @@
 {
   style: {
     navigationStyle: 'custom',
-    navigationBarTitleText: '首页',
+    navigationBarTitleText: '没人背单词',
   },
 }
 </route>
 <template>
   <view
-    class="bg-white overflow-hidden pt-2 px-4"
+    class="bg-black overflow-hidden main-box"
     :style="{ marginTop: safeAreaInsets?.top + 'px' }"
-  ></view>
+  >
+    <view class="navigation">没人背单词</view>
+    <view class="hello mt-4 px-8">
+      <view class="top">我在使用没人背单词</view>
+      <view class="bottom">
+        <view class="left">Hello~</view>
+        <view class="right">打卡记录></view>
+      </view>
+      <view class="book-box">书籍名称</view>
+      <view class="progress">
+        <progress activeColor="#10AEFF" border-radius="20" show-info="true" :percent="progress" />
+      </view>
+      <view class="task">
+        <view class="task-top">
+          <view class="task-top-title">-今日任务-</view>
+        </view>
+        <view class="task-bottom">
+          <view class="task-box">
+            <view class="task-num">{{ taskItems[0].num }}</view>
+            <view class="task-name">新增单词</view>
+          </view>
+          <view class="task-box">
+            <view class="task-num">{{ taskItems[1].num }}</view>
+            <view class="task-name">复习单词</view>
+          </view>
+          <view class="task-box">
+            <view class="task-num">{{ taskItems[2].num }}</view>
+            <view class="task-name">未学单词</view>
+          </view>
+        </view>
+      </view>
+      <view class="start">
+        <button
+          style="color: #fff; background-color: #10aeff; border-color: #10aeff"
+          size="mini"
+          type="primary"
+          hover-class="button-hover"
+          @click="goTo"
+        >
+          开始学习
+        </button>
+      </view>
+    </view>
+  </view>
 </template>
 
 <script lang="ts" setup>
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
+const progress = ref(60)
+const taskItems = ref([
+  { num: 10, name: '新增单词' },
+  { num: 20, name: '复习单词' },
+  { num: 30, name: '未学单词' },
+])
+const goTo = () => {
+  uni.navigateTo({
+    url: '/pages/card/main',
+  })
+}
 </script>
 
-<style>
+<style scoped lang="scss">
 .main-title-color {
   color: #d14328;
+}
+
+.main-box {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  background-color: #f5f5f5;
+}
+
+.navigation {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  background-color: #fff;
+}
+
+.hello {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  .top {
+    font-size: 32rpx;
+    color: #333;
+  }
+
+  .bottom {
+    display: flex;
+    justify-content: space-between;
+
+    .left {
+      font-size: 80rpx;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .right {
+      width: 180rpx;
+      height: 40rpx;
+      margin-top: 40rpx;
+      font-size: 32rpx;
+      line-height: 40rpx;
+      color: #333;
+      text-align: center;
+      background-color: #fefa86;
+      border: 1px solid black;
+      border-radius: 20rpx;
+    }
+  }
+
+  .book-box {
+    box-sizing: border-box;
+    width: 100%;
+    height: 300rpx;
+    padding: 0 40rpx;
+    margin: 40rpx 0 0;
+    line-height: 300rpx;
+    text-align: center;
+    background-color: #39c5bb;
+    border-radius: 20rpx;
+  }
+
+  .progress {
+    margin-top: 40rpx;
+  }
+
+  .task {
+    width: 100%;
+    height: 300rpx;
+    margin-top: 40rpx;
+
+    .task-top {
+      text-align: center;
+
+      .task-top-title {
+        font-size: 30rpx;
+        color: #969696;
+      }
+    }
+
+    .task-bottom {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 40rpx;
+
+      .task-box {
+        width: 200rpx;
+        height: 200rpx;
+        text-align: center;
+
+        .task-num {
+          font-size: 60rpx;
+          font-weight: bold;
+          color: #333;
+        }
+
+        .task-name {
+          font-size: 30rpx;
+          font-weight: lighter;
+          color: #333;
+        }
+      }
+    }
+  }
+
+  .start {
+    width: 100%;
+    height: 100rpx;
+    margin-top: 40rpx;
+    text-align: center;
+  }
+}
+
+.button-hover {
+  color: rgb(255 255 255 / 60%);
+  background-color: #1eb4ff;
+  border-color: #1eb4ff;
 }
 </style>
