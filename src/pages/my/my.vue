@@ -91,7 +91,7 @@ const showToast = () => {
   toast.show('暂未开放')
 }
 const goTo = (str) => {
-  uni.redirectTo({
+  uni.navigateTo({
     url: `/pages/${str}/main`,
   })
 }
