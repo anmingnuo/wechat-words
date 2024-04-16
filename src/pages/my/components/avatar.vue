@@ -54,6 +54,12 @@ function handleCancel(event) {
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 }
 
 .profile-img {
