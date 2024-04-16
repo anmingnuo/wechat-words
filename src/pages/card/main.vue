@@ -12,7 +12,6 @@
       <view class="top">
         <view class="text">
           {{ char.name }}
-          <!-- {{ char.name }} -->
         </view>
       </view>
       <view class="bottom">
@@ -35,12 +34,12 @@ const char = ref({
   type: 'text',
 })
 const goTo = (str) => {
-  uni.navigateTo({
+  uni.redirectTo({
     url: `/pages/${str}/main`,
   })
 }
 onLoad((options) => {
-  char.value.name += '1'
+  char.value.name += Math.random().toFixed(2) + ''
 })
 </script>
 <style lang="scss" scoped>
@@ -58,15 +57,20 @@ onLoad((options) => {
   margin-top: 70rpx;
 
   .top {
-    width: 400rpx;
-    height: 400rpx;
+    // width: 400rpx;
+
+    // height: 400rpx;
     line-height: 400rpx;
     text-align: center;
 
     .text {
+      width: 100%;
+      overflow: hidden;
       font-size: 50rpx;
       font-weight: bold;
       color: #333;
+      text-overflow: ellipsis;
+      white-space: nowrap;
 
       ::after {
         color: #333;
