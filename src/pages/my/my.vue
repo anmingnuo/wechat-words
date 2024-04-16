@@ -16,11 +16,11 @@
       <view class="desc">微信用户</view>
       <view class="icon-box">
         <view class="box-item">
-          <wd-icon name="edit-outline" color="#7b7b7b" size="100rpx"></wd-icon>
+          <wd-icon name="edit-outline" color="#7b7b7b" size="80rpx"></wd-icon>
           <view class="text">单词书</view>
         </view>
         <view class="box-item">
-          <wd-icon name="spool" color="#7b7b7b" size="100rpx"></wd-icon>
+          <wd-icon name="spool" color="#7b7b7b" size="80rpx"></wd-icon>
           <view class="text">生词本</view>
         </view>
         <view class="box-item">
@@ -53,7 +53,7 @@
           <wd-icon name="rollback" color="#7b7b7b" size="60rpx"></wd-icon>
           <view class="text">问题反馈</view>
         </view>
-        <view class="right">
+        <view class="right" @click="showToast">
           <wd-icon name="arrow-right" color="#7b7b7b" size="60rpx"></wd-icon>
         </view>
       </view>
@@ -62,15 +62,17 @@
           <wd-icon name="share" color="#7b7b7b" size="60rpx"></wd-icon>
           <view class="text">分享小程序</view>
         </view>
-        <view class="right">
+        <view class="right" @click="showToast">
           <wd-icon name="arrow-right" color="#7b7b7b" size="60rpx"></wd-icon>
         </view>
       </view>
     </view>
+    <wd-toast />
   </view>
 </template>
 
 <script lang="ts" setup>
+import { useToast } from 'wot-design-uni'
 import PLATFORM from '@/utils/platform'
 import avatar from './components/avatar.vue'
 import myCalendar from '@/components/myCalendar.vue'
@@ -78,8 +80,15 @@ import myCalendar from '@/components/myCalendar.vue'
 const { safeAreaInsets } = uni.getSystemInfoSync()
 
 const value = ref<string>('')
-function handleChange(event) {
+const handleChange = (event) => {
   console.log(event)
+}
+const toast = useToast()
+
+const showToast = () => {
+  console.log(111)
+
+  toast.show('暂未开放')
 }
 </script>
 <style lang="scss" scoped>
@@ -100,7 +109,7 @@ function handleChange(event) {
     display: flex;
     justify-content: space-around;
     width: 100%;
-    margin-top: 20rpx;
+    margin-top: 40rpx;
   }
 
   .text {
@@ -115,7 +124,7 @@ function handleChange(event) {
     justify-content: space-between;
     width: 90%;
     height: 100rpx;
-    margin: 40rpx 0;
+    margin: 20rpx 0;
 
     .left {
       display: flex;
@@ -136,7 +145,7 @@ function handleChange(event) {
         align-items: center;
         justify-content: center;
         width: 200rpx;
-        padding: 12rpx 50rpx;
+        padding: 12rpx 56rpx;
         text-align: center;
         border: 2rpx solid #1c9813;
         border-radius: 80rpx;
