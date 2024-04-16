@@ -17,7 +17,9 @@
       <view class="top">我在使用没人背单词</view>
       <view class="bottom">
         <view class="left">Hello~</view>
-        <view class="right">打卡记录></view>
+        <view class="right">
+          <myCalendar type="button" />
+        </view>
       </view>
       <view class="book-box">书籍名称</view>
       <view class="progress">
@@ -59,6 +61,8 @@
 
 <script lang="ts" setup>
 // 获取屏幕边界到安全区域距离
+import myCalendar from '@/components/myCalendar.vue'
+
 const { safeAreaInsets } = uni.getSystemInfoSync()
 const progress = ref(60)
 const taskItems = ref([
@@ -114,16 +118,11 @@ const goTo = () => {
     }
 
     .right {
-      width: 180rpx;
-      height: 40rpx;
-      margin-top: 40rpx;
-      font-size: 32rpx;
-      line-height: 40rpx;
-      color: #333;
-      text-align: center;
-      background-color: #fefa86;
-      border: 1px solid black;
-      border-radius: 20rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 300rpx;
+      padding-left: 180rpx;
     }
   }
 
