@@ -15,11 +15,11 @@
       <avatar></avatar>
       <view class="desc">微信用户</view>
       <view class="icon-box">
-        <view class="box-item">
+        <view class="box-item" @click="goTo('book')">
           <wd-icon name="edit-outline" color="#7b7b7b" size="80rpx"></wd-icon>
           <view class="text">单词书</view>
         </view>
-        <view class="box-item">
+        <view class="box-item" @click="goTo('vocabulary')">
           <wd-icon name="spool" color="#7b7b7b" size="80rpx"></wd-icon>
           <view class="text">生词本</view>
         </view>
@@ -89,6 +89,11 @@ const showToast = () => {
   console.log(111)
 
   toast.show('暂未开放')
+}
+const goTo = (str) => {
+  uni.redirectTo({
+    url: `/pages/${str}/main`,
+  })
 }
 </script>
 <style lang="scss" scoped>
