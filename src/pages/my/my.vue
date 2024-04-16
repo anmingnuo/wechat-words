@@ -11,7 +11,9 @@
     class="bg-white overflow-hidden pt-2 px-4"
     :style="{ marginTop: safeAreaInsets?.top + 'px' }"
   >
-    <avatar></avatar>
+    <view class="box">
+      <avatar></avatar>
+    </view>
   </view>
 </template>
 
@@ -24,5 +26,13 @@ const { safeAreaInsets } = uni.getSystemInfoSync()
 <style lang="scss" scoped>
 .desc {
   height: 80rpx;
+}
+
+.box {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 70rpx;
 }
 </style>

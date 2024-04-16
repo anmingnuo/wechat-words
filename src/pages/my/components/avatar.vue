@@ -7,14 +7,14 @@
     <wd-img
       v-if="imgSrc"
       round
-      width="200px"
-      height="200px"
+      width="150rpx"
+      height="150rpx"
       :src="imgSrc"
       mode="aspectFit"
       custom-class="profile-img"
       @click="upload"
     />
-    <view style="font-size: 14px">点击上传头像</view>
+    <!-- <view style="font-size: 14px">点击上传头像</view> -->
   </view>
 </template>
 
@@ -48,4 +48,9 @@ function handleCancel(event) {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.profile-img {
+  width: 150rpx !important;
+  height: 150rpx !important;
+}
+</style>
