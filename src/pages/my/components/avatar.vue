@@ -3,6 +3,7 @@
   <view class="profile">
     <view v-if="!imgSrc" class="img" @click="upload">
       <wd-icon name="fill-camera" custom-class="img-icon"></wd-icon>
+      <view style="font-size: 14px">点击上传头像</view>
     </view>
     <wd-img
       v-if="imgSrc"
@@ -49,6 +50,12 @@ function handleCancel(event) {
 </script>
 
 <style lang="scss" scoped>
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .profile-img {
   width: 150rpx !important;
   height: 150rpx !important;
