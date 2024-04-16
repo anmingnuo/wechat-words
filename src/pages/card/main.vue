@@ -7,8 +7,8 @@
 </route>
 
 <template>
-  <view class="bg-white overflow-hidden pt-2 px-4 main-box">
-    <view class="card-box">
+  <view class="bg-white overflow-hidden pt-2 main-box">
+    <view class="card-box" v-if="curStatus">
       <view class="top">
         <view class="text">
           {{ char.name }}
@@ -16,14 +16,18 @@
       </view>
       <view class="bottom">
         <view class="box true" @click="goTo('card')">认识</view>
-        <view class="box" @click="goTo('card')">模糊</view>
-        <view class="box" @click="goTo('card')">不认识</view>
+        <view class="box" @click="changeStatus">模糊</view>
+        <view class="box" @click="changeStatus">不认识</view>
       </view>
+    </view>
+    <view class="card-box" v-else>
+      <Details id="1" @changeStatus="changeStatus" />
     </view>
   </view>
 </template>
 
 <script lang="ts" setup>
+import Details from '@/components/Details.vue'
 import { onLoad } from '@dcloudio/uni-app'
 import PLATFORM from '@/utils/platform'
 // import avatar from './components/avatar.vue'
@@ -37,6 +41,10 @@ const goTo = (str) => {
   uni.redirectTo({
     url: `/pages/${str}/main`,
   })
+}
+const curStatus = ref(true)
+const changeStatus = () => {
+  curStatus.value = !curStatus.value
 }
 onLoad((options) => {
   char.value.name += Math.random().toFixed(2) + ''
