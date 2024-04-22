@@ -62,7 +62,7 @@
 <script lang="ts" setup>
 // 获取屏幕边界到安全区域距离
 import myCalendar from '@/components/myCalendar.vue'
-
+import { getProcess } from '@/api/process/index'
 const { safeAreaInsets } = uni.getSystemInfoSync()
 const progress = ref(60)
 const taskItems = ref([
@@ -75,6 +75,15 @@ const goTo = () => {
     url: '/pages/card/main',
   })
 }
+const getProcessById = async () => {
+  const res = await getProcess('16')
+  console.log(res)
+  progress.value = res.data['学习进度']
+}
+const init = () => {
+  getProcessById()
+}
+init()
 </script>
 
 <style scoped lang="scss">
