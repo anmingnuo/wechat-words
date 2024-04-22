@@ -18,7 +18,7 @@
           @change="handleChange"
         />
       </view>
-      <view class="item" v-for="(item, index) in arr">
+      <view class="item" v-for="(item, index) in arr" @click="changeBook(item)">
         <view class="left">
           <image
             class=""
@@ -35,14 +35,17 @@
         </view>
       </view>
     </view>
+    <wd-message-box />
   </view>
 </template>
 
 <script lang="ts" setup>
 import PLATFORM from '@/utils/platform'
+import { useMessage } from 'wot-design-uni'
 // import avatar from './components/avatar.vue'
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
+const message = useMessage()
 const arr = ref([
   {
     name: '高考大纲词汇',
@@ -65,6 +68,19 @@ const arr = ref([
     img: 'https://tse1-mm.cn.bing.net/th/id/OIP-C.wqUGd299Jxz55hxqD2dqoAHaKN?rs=1&pid=ImgDetMain',
   },
 ])
+const changeBook = (item) => {
+  message
+    .confirm({
+      msg: `是否选择${item.name}进行学习？`,
+      title: '系统提示',
+    })
+    .then(() => {
+      console.log('点击了确定按钮')
+    })
+    .catch(() => {
+      console.log('点击了取消按钮')
+    })
+}
 const keyword = ref('')
 const handleChange = (event) => {
   console.log(event)
