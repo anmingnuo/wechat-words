@@ -3,10 +3,19 @@
     <view class="out-top">
       <view class="left">
         <view class="top">well</view>
-        <view class="bottom">well</view>
-        <view class="center">井</view>
+        <view class="bottom">
+          <view>
+            <view class="bottom">well</view>
+            <view class="center">井</view>
+          </view>
+          <view>
+            <wd-icon name="sound" size="44rpx"></wd-icon>
+          </view>
+        </view>
       </view>
-      <view class="right"><wd-icon name="sound" size="22px"></wd-icon></view>
+      <view class="right" @click="showToast">
+        <wd-icon :name="isFav ? 'star-filled' : 'star'" size="44rpx"></wd-icon>
+      </view>
     </view>
     <view style="width: 100%; margin: 20rpx 0; font-size: 50rpx">例句:</view>
     <view class="out-bottom">
@@ -16,8 +25,8 @@
       </view>
     </view>
     <view class="btn-box">
-      <wd-button type="primary" size="small" @click="change">明白了</wd-button>
-      <wd-button type="success" size="small" @click="showToast">添加到生词本</wd-button>
+      <!-- size="small" -->
+      <wd-button type="primary" @click="change">下一个</wd-button>
     </view>
     <wd-toast />
   </view>
@@ -34,6 +43,7 @@ const emit = defineEmits()
 const change = () => {
   emit('changeStatus')
 }
+const isFav = ref(false)
 const { id } = toRefs(props)
 const arr = ref([
   {
@@ -56,6 +66,7 @@ const arr = ref([
 const toast = useToast()
 
 const showToast = (str) => {
+  isFav.value = !isFav.value
   toast.show('已经添加至生词本')
 }
 onLoad(() => {
@@ -87,15 +98,20 @@ onLoad(() => {
         color: #000;
       }
 
-      .center {
-        padding-left: 20rpx;
-        font-size: 60rpx;
-        color: #000;
-      }
-
       .bottom {
-        font-size: 34rpx;
-        color: #7b7b7b;
+        display: flex;
+        justify-content: space-between;
+
+        .center {
+          padding-left: 20rpx;
+          font-size: 60rpx;
+          color: #000;
+        }
+
+        .bottom {
+          font-size: 34rpx;
+          color: #7b7b7b;
+        }
       }
     }
   }
