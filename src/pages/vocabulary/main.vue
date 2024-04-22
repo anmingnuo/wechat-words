@@ -9,7 +9,7 @@
 <template>
   <view class="bg-white overflow-hidden pt-2 px-8 main-box">
     <view class="card-box">
-      <view class="item" v-for="(item, index) in arr">
+      <view class="item" v-for="(item, index) in arr" @click="goTo('card')">
         <view class="left">{{ item.name }}</view>
         <view class="right">{{ item.meaning }}</view>
       </view>
@@ -44,6 +44,11 @@ const arr = ref([
     meaning: '井',
   },
 ])
+const goTo = (str) => {
+  uni.navigateTo({
+    url: `/pages/${str}/main`,
+  })
+}
 const keyword = ref('')
 const handleChange = (event) => {
   console.log(event)
