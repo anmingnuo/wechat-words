@@ -15,7 +15,7 @@
         </view>
       </view>
       <view class="bottom">
-        <view class="box true" @click="goTo('card')">认识</view>
+        <view class="box true" @click="changeStatus">认识</view>
         <view class="box" @click="changeStatus">模糊</view>
         <view class="box" @click="changeStatus">不认识</view>
       </view>
