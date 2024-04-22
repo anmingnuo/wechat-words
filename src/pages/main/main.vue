@@ -21,7 +21,9 @@
           <myCalendar type="button" />
         </view>
       </view>
-      <view class="book-box">书籍名称</view>
+      <view class="book-box" @click="selectBook()">
+        {{ isHasBook ? '' : '请选择书籍' }}
+      </view>
       <view class="progress">
         <progress activeColor="#10AEFF" border-radius="20" show-info="true" :percent="progress" />
       </view>
@@ -30,17 +32,17 @@
           <view class="task-top-title">-今日任务-</view>
         </view>
         <view class="task-bottom">
-          <view class="task-box">
+          <!-- <view class="task-box">
             <view class="task-num">{{ taskItems[0].num }}</view>
             <view class="task-name">新增单词</view>
-          </view>
+          </view> -->
           <view class="task-box">
             <view class="task-num">{{ taskItems[1].num }}</view>
-            <view class="task-name">复习单词</view>
+            <view class="task-name">已复习</view>
           </view>
           <view class="task-box">
             <view class="task-num">{{ taskItems[2].num }}</view>
-            <view class="task-name">未学单词</view>
+            <view class="task-name">未复习</view>
           </view>
         </view>
       </view>
@@ -50,12 +52,13 @@
           size="mini"
           type="primary"
           hover-class="button-hover"
-          @click="goTo"
+          @click="goToLogin()"
         >
           开始学习
         </button>
       </view>
     </view>
+    <wd-message-box />
   </view>
 </template>
 
@@ -63,16 +66,50 @@
 // 获取屏幕边界到安全区域距离
 import myCalendar from '@/components/myCalendar.vue'
 import { getProcess } from '@/api/process/index'
+import { useMessage } from 'wot-design-uni'
+const message = useMessage()
 const { safeAreaInsets } = uni.getSystemInfoSync()
+const isHasBook = ref(false)
 const progress = ref(60)
 const taskItems = ref([
   { num: 10, name: '新增单词' },
   { num: 20, name: '复习单词' },
   { num: 30, name: '未学单词' },
 ])
-const goTo = () => {
+const selectBook = () => {
+  console.log('选择书籍')
+  if (!isHasBook.value) {
+    message
+      .confirm({
+        msg: '请选择书籍后再进行学习',
+        title: '系统提示',
+      })
+      .then(() => {
+        console.log('点击了确定按钮')
+        goTo('book')
+      })
+      .catch(() => {
+        console.log('点击了取消按钮')
+      })
+  }
+}
+const goToLogin = () => {
+  message
+    .confirm({
+      msg: '请先登录',
+      title: '系统提示',
+    })
+    .then(() => {
+      console.log('点击了确定按钮')
+      goTo('login')
+    })
+    .catch(() => {
+      console.log('点击了取消按钮')
+    })
+}
+const goTo = (str) => {
   uni.navigateTo({
-    url: '/pages/card/main',
+    url: `/pages/${str}/main`,
   })
 }
 const getProcessById = async () => {
