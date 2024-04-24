@@ -67,6 +67,7 @@
 import myCalendar from '@/components/myCalendar.vue'
 import { getProcess } from '@/api/process/index'
 import { useMessage } from 'wot-design-uni'
+import { onLoad, onShow } from '@dcloudio/uni-app'
 const message = useMessage()
 const { safeAreaInsets } = uni.getSystemInfoSync()
 const isHasBook = ref(false)
@@ -120,7 +121,9 @@ const getProcessById = async () => {
 const init = () => {
   getProcessById()
 }
-init()
+onShow(() => {
+  init()
+})
 </script>
 
 <style scoped lang="scss">
