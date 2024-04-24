@@ -39,6 +39,7 @@
 </template>
 
 <script lang="ts" setup>
+import { login } from '@/api/login'
 import { useToast } from 'wot-design-uni'
 import { onLoad } from '@dcloudio/uni-app'
 import PLATFORM from '@/utils/platform'
@@ -65,7 +66,8 @@ function handleSubmit() {
         showSuccess({
           msg: '校验通过',
         })
-        goTo('main')
+        userLogin()
+        // goTo('main')
       }
     })
     .catch((error) => {
@@ -76,6 +78,11 @@ const goTo = (str) => {
   uni.redirectTo({
     url: `/pages/${str}/main`,
   })
+}
+const userLogin = async () => {
+  const res = await login({ username: model.username, password: model.password })
+  console.log('登录信息', res)
+  goTo('main')
 }
 onLoad((options) => {})
 </script>
