@@ -19,6 +19,7 @@ type IUniUploadFileOptions = {
 
 type IUserInfo = {
   nickname?: string
+  userId?: string
   avatar?: string
   /** 微信的 openid，非微信没有这个字段 */
   openid?: string
@@ -26,6 +27,7 @@ type IUserInfo = {
   role?: string
   phone?: string
   name?: string
+  isHaveBook?: boolean | string
 }
 
 enum TestEnum {
