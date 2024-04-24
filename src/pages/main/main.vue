@@ -129,7 +129,8 @@ const getProcessById = async () => {
 }
 const init = () => {
   if (store.userInfo.token === '') {
-    goToLogin()
+    console.log(111)
+    goTo('login')
   } else {
     getProcessById()
     getToday()
