@@ -21,7 +21,8 @@
           <myCalendar type="button" />
         </view>
       </view>
-      <view class="book-box" :style="'background:'isHaveBook?isHaveBook:''" @click="selectBook()">
+      <!-- :style="'background:'isHaveBook?isHaveBook:''" -->
+      <view class="book-box" @click="selectBook()">
         {{ isHaveBook ? '' : '请选择书籍' }}
       </view>
       <view class="progress">
@@ -127,7 +128,12 @@ const getProcessById = async () => {
   progress.value = res.data['学习进度']
 }
 const init = () => {
-  getProcessById()
+  if (store.userInfo.token === '') {
+    goToLogin()
+  } else {
+    getProcessById()
+    getToday()
+  }
 }
 onShow(() => {
   init()
