@@ -13,7 +13,7 @@
         <wd-input
           prefix-icon="search"
           type="text"
-          v-model="keyword"
+          v-model="params.keyword"
           placeholder="请输入搜索关键词"
           @change="handleChange"
         />
@@ -30,7 +30,7 @@
           ></image>
         </view>
         <view class="right">
-          <view class="top">{{ item.name }}</view>
+          <view class="top">{{ item.bookName }}</view>
           <view class="bottom">{{ item.nums }}词</view>
         </view>
       </view>
@@ -41,33 +41,15 @@
 
 <script lang="ts" setup>
 import PLATFORM from '@/utils/platform'
+import { useUserStore } from '@/store/user'
+import { getBook, saveBook } from '@/api/book'
 import { useMessage } from 'wot-design-uni'
+let store = useUserStore()
 // import avatar from './components/avatar.vue'
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
 const message = useMessage()
-const arr = ref([
-  {
-    name: '高考大纲词汇',
-    nums: 3521,
-    img: 'https://tse1-mm.cn.bing.net/th/id/OIP-C.wqUGd299Jxz55hxqD2dqoAHaKN?rs=1&pid=ImgDetMain',
-  },
-  {
-    name: '四级核心词汇',
-    nums: 4567,
-    img: 'https://tse1-mm.cn.bing.net/th/id/OIP-C.wqUGd299Jxz55hxqD2dqoAHaKN?rs=1&pid=ImgDetMain',
-  },
-  {
-    name: '六级核心词汇',
-    nums: 6789,
-    img: 'https://tse1-mm.cn.bing.net/th/id/OIP-C.wqUGd299Jxz55hxqD2dqoAHaKN?rs=1&pid=ImgDetMain',
-  },
-  {
-    name: '考研核心词汇',
-    nums: 9102,
-    img: 'https://tse1-mm.cn.bing.net/th/id/OIP-C.wqUGd299Jxz55hxqD2dqoAHaKN?rs=1&pid=ImgDetMain',
-  },
-])
+const arr = ref([])
 const changeBook = (item) => {
   message
     .confirm({
@@ -76,16 +58,38 @@ const changeBook = (item) => {
     })
     .then(() => {
       console.log('点击了确定按钮')
+      save(item.id)
     })
     .catch(() => {
       console.log('点击了取消按钮')
     })
 }
-const keyword = ref('')
-const handleChange = (event) => {
-  console.log(event)
-  console.log(keyword.value)
+const params = ref({
+  keyword: '',
+  page: 1,
+  size: 10,
+})
+const getList = async () => {
+  const res = await getBook(params.value)
+  arr.value = [arr.value, ...res.data]
 }
+const save = async (bookId) => {
+  let userId = parseInt(store.userInfo.userId)
+  let data = {
+    bookId,
+    userId,
+  }
+  const res = await saveBook(data)
+  console.log('保存书籍', res)
+}
+const handleChange = () => {
+  params.value.page = 1
+  getList()
+}
+const init = () => {
+  getList()
+}
+init()
 </script>
 <style lang="scss" scoped>
 .main-box {

@@ -21,8 +21,8 @@
           <myCalendar type="button" />
         </view>
       </view>
-      <view class="book-box" @click="selectBook()">
-        {{ isHasBook ? '' : '请选择书籍' }}
+      <view class="book-box" :style="'background:'isHaveBook?isHaveBook:''" @click="selectBook()">
+        {{ isHaveBook ? '' : '请选择书籍' }}
       </view>
       <view class="progress">
         <progress activeColor="#10AEFF" border-radius="20" show-info="true" :percent="progress" />
@@ -32,16 +32,12 @@
           <view class="task-top-title">-今日任务-</view>
         </view>
         <view class="task-bottom">
-          <!-- <view class="task-box">
-            <view class="task-num">{{ taskItems[0].num }}</view>
-            <view class="task-name">新增单词</view>
-          </view> -->
           <view class="task-box">
-            <view class="task-num">{{ taskItems[1].num }}</view>
+            <view class="task-num">{{ taskItems[0].num }}</view>
             <view class="task-name">已复习</view>
           </view>
           <view class="task-box">
-            <view class="task-num">{{ taskItems[2].num }}</view>
+            <view class="task-num">{{ taskItems[1].num }}</view>
             <view class="task-name">未复习</view>
           </view>
         </view>
@@ -64,22 +60,23 @@
 
 <script lang="ts" setup>
 // 获取屏幕边界到安全区域距离
+import { useUserStore } from '@/store/user'
 import myCalendar from '@/components/myCalendar.vue'
-import { getProcess } from '@/api/process/index'
+import { getProcess, getTodayTask } from '@/api/process/index'
 import { useMessage } from 'wot-design-uni'
 import { onLoad, onShow } from '@dcloudio/uni-app'
+let store = useUserStore()
 const message = useMessage()
 const { safeAreaInsets } = uni.getSystemInfoSync()
-const isHasBook = ref(false)
+const isHaveBook = store.userInfo.isHaveBook
 const progress = ref(60)
 const taskItems = ref([
-  { num: 10, name: '新增单词' },
   { num: 20, name: '复习单词' },
   { num: 30, name: '未学单词' },
 ])
 const selectBook = () => {
   console.log('选择书籍')
-  if (!isHasBook.value) {
+  if (!isHaveBook) {
     message
       .confirm({
         msg: '请选择书籍后再进行学习',
@@ -94,19 +91,30 @@ const selectBook = () => {
       })
   }
 }
+const getToday = async () => {
+  let uid = store.userInfo.userId
+  const res = await getTodayTask(uid)
+  taskItems.value[1].num = res.data['已复习']
+  taskItems.value[2].num = res.data['待复习']
+}
 const goToLogin = () => {
-  message
-    .confirm({
-      msg: '请先登录',
-      title: '系统提示',
-    })
-    .then(() => {
-      console.log('点击了确定按钮')
-      goTo('login')
-    })
-    .catch(() => {
-      console.log('点击了取消按钮')
-    })
+  if (store.userInfo.token !== '') {
+    goTo('card')
+  } else {
+    goToLogin()
+    message
+      .confirm({
+        msg: '请先登录',
+        title: '系统提示',
+      })
+      .then(() => {
+        console.log('点击了确定按钮')
+        goTo('login')
+      })
+      .catch(() => {
+        console.log('点击了取消按钮')
+      })
+  }
 }
 const goTo = (str) => {
   uni.navigateTo({
@@ -114,8 +122,8 @@ const goTo = (str) => {
   })
 }
 const getProcessById = async () => {
-  const res = await getProcess('16')
-  console.log(res)
+  let uid = store.userInfo.userId
+  const res = await getProcess(uid)
   progress.value = res.data['学习进度']
 }
 const init = () => {
