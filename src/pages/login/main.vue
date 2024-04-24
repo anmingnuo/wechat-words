@@ -39,12 +39,10 @@
 </template>
 
 <script lang="ts" setup>
-import { useUserStore } from '@/store/user'
-import { login, getInfo } from '@/api/login'
+import { login } from '@/api/login'
 import { useToast } from 'wot-design-uni'
 import { onLoad } from '@dcloudio/uni-app'
 import PLATFORM from '@/utils/platform'
-let store = useUserStore()
 // import avatar from './components/avatar.vue'
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
@@ -84,17 +82,6 @@ const goTo = (str) => {
 const userLogin = async () => {
   const res = await login({ username: model.username, password: model.password })
   console.log('登录信息', res)
-  let token = res.data.token
-  // let token = '1111'
-  let info = store.userInfo
-  store.setUserInfo({ ...info, token })
-  getUserInfo()
-}
-const getUserInfo = async () => {
-  const res = await getInfo()
-  let info = store.userInfo
-  store.setUserInfo({ ...info, ...res.data })
-  console.log('用户信息', store.userInfo)
   goTo('main')
 }
 onLoad((options) => {})
