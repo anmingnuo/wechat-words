@@ -95,8 +95,8 @@ const selectBook = () => {
 const getToday = async () => {
   let uid = store.userInfo.userId
   const res = await getTodayTask(uid)
-  taskItems.value[1].num = res.data['已复习']
-  taskItems.value[2].num = res.data['待复习']
+  taskItems.value[0].num = res.data['已复习']
+  taskItems.value[1].num = res.data['待复习']
 }
 const goToLogin = () => {
   if (store.userInfo.token !== '') {
