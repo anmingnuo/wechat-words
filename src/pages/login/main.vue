@@ -95,9 +95,10 @@ const userLogin = async () => {
 const getUserInfo = async () => {
   const res = await getInfo()
   let info = store.userInfo
+  console.log(info)
   store.setUserInfo({ ...info, ...res.data })
   console.log('用户信息', store.userInfo)
-  if (isHaveBook !== '') {
+  if (isHaveBook === '') {
     message
       .confirm({
         msg: '请选择书籍后再进行学习',

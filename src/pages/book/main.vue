@@ -51,9 +51,10 @@ const { safeAreaInsets } = uni.getSystemInfoSync()
 const message = useMessage()
 const arr = ref([])
 const changeBook = (item) => {
+  console.log(item)
   message
     .confirm({
-      msg: `是否选择${item.name}进行学习？`,
+      msg: `是否选择${item.bookName}进行学习？`,
       title: '系统提示',
     })
     .then(() => {
@@ -71,7 +72,8 @@ const params = ref({
 })
 const getList = async () => {
   const res = await getBook(params.value)
-  arr.value = [arr.value, ...res.data]
+  arr.value = [...arr.value, ...res.data]
+  console.log(arr.value)
 }
 const save = async (bookId) => {
   let userId = parseInt(store.userInfo.userId)

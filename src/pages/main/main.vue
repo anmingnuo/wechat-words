@@ -60,6 +60,7 @@
 
 <script lang="ts" setup>
 // 获取屏幕边界到安全区域距离
+import { getInfo } from '@/api/login'
 import { useUserStore } from '@/store/user'
 import myCalendar from '@/components/myCalendar.vue'
 import { getProcess, getTodayTask } from '@/api/process/index'
@@ -68,14 +69,14 @@ import { onLoad, onShow } from '@dcloudio/uni-app'
 let store = useUserStore()
 const message = useMessage()
 const { safeAreaInsets } = uni.getSystemInfoSync()
-const isHaveBook = store.userInfo.isHaveBook || ''
+let isHaveBook = store.userInfo.isHaveBook
 const progress = ref(60)
 const taskItems = ref([
   { num: 20, name: '复习单词' },
   { num: 30, name: '未学单词' },
 ])
 const selectBook = () => {
-  if (isHaveBook !== '') {
+  if (isHaveBook === '') {
     message
       .confirm({
         msg: '请选择书籍后再进行学习',
@@ -97,8 +98,10 @@ const getToday = async () => {
   taskItems.value[1].num = res.data['待复习']
 }
 const goToLogin = () => {
+  console.log(store.userInfo);
+  isHaveBook = store.userInfo.isHaveBook
   if (store.userInfo.token !== '') {
-    if (isHaveBook !== '') {
+    if (isHaveBook === '') {
       selectBook()
     } else {
       goTo('card')
@@ -128,6 +131,14 @@ const getProcessById = async () => {
   const res = await getProcess(uid)
   progress.value = res.data['学习进度']
 }
+
+const getUserInfo = async () => {
+  const res = await getInfo()
+  let info = store.userInfo
+  store.setUserInfo({ ...info, ...res.data })
+  isHaveBook = store.userInfo.isHaveBook
+  console.log('用户信息', store.userInfo)
+}
 const init = () => {
   console.log(store.userInfo, 'info')
   console.log(isHaveBook, 'isHaveBook')
@@ -136,6 +147,7 @@ const init = () => {
   } else {
     getProcessById()
     getToday()
+    getUserInfo()
   }
 }
 onShow(() => {

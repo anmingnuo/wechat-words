@@ -24,7 +24,7 @@ export const getBookDatilByID = (id: string) => {
 
 export const saveBook = (data: { bookId: number; userId: number }) => {
   return http<any>({
-    url: `/api/wechat/bookSelection/save`,
+      url: `/api/wechat/bookSelection/update`,
     method: 'POST',
     data,
   })
