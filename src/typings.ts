@@ -27,7 +27,7 @@ type IUserInfo = {
   role?: string
   phone?: string
   name?: string
-  isHaveBook?: boolean | string
+  isHaveBook?: string
 }
 
 enum TestEnum {

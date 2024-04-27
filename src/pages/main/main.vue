@@ -68,7 +68,7 @@ import { onLoad, onShow } from '@dcloudio/uni-app'
 let store = useUserStore()
 const message = useMessage()
 const { safeAreaInsets } = uni.getSystemInfoSync()
-const isHaveBook = store.userInfo.isHaveBook
+const isHaveBook = store.userInfo.isHaveBook || ''
 const progress = ref(60)
 const taskItems = ref([
   { num: 20, name: '复习单词' },
@@ -129,8 +129,9 @@ const getProcessById = async () => {
   progress.value = res.data['学习进度']
 }
 const init = () => {
+  console.log(store.userInfo, 'info')
+  console.log(isHaveBook, 'isHaveBook')
   if (store.userInfo.token === '') {
-    console.log(111)
     goTo('login')
   } else {
     getProcessById()
