@@ -35,6 +35,7 @@
       </view>
     </wd-form>
     <wd-toast />
+    <wd-message-box />
   </view>
 </template>
 
@@ -43,12 +44,15 @@ import { useUserStore } from '@/store/user'
 import { login, getInfo } from '@/api/login'
 import { useToast } from 'wot-design-uni'
 import { onLoad } from '@dcloudio/uni-app'
+import { useMessage } from 'wot-design-uni'
 import PLATFORM from '@/utils/platform'
 let store = useUserStore()
+const isHaveBook = store.userInfo.isHaveBook
 // import avatar from './components/avatar.vue'
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
 const { success: showSuccess } = useToast()
+const message = useMessage()
 
 const model = reactive<{
   username: string
@@ -65,11 +69,10 @@ function handleSubmit() {
     .validate()
     .then(({ valid, errors }) => {
       if (valid) {
-        showSuccess({
-          msg: '校验通过',
-        })
+        // showSuccess({
+        //   msg: '校验通过',
+        // })
         userLogin()
-        // goTo('main')
       }
     })
     .catch((error) => {
@@ -85,7 +88,6 @@ const userLogin = async () => {
   const res = await login({ username: model.username, password: model.password })
   console.log('登录信息', res)
   let token = res.data.token
-  // let token = '1111'
   let info = store.userInfo
   store.setUserInfo({ ...info, token })
   getUserInfo()
@@ -95,6 +97,20 @@ const getUserInfo = async () => {
   let info = store.userInfo
   store.setUserInfo({ ...info, ...res.data })
   console.log('用户信息', store.userInfo)
+  if (isHaveBook !== '') {
+    message
+      .confirm({
+        msg: '请选择书籍后再进行学习',
+        title: '系统提示',
+      })
+      .then(() => {
+        console.log('点击了确定按钮')
+        goTo('book')
+      })
+      .catch(() => {
+        console.log('点击了取消按钮')
+      })
+  }
   goTo('main')
 }
 onLoad((options) => {})

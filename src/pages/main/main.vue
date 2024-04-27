@@ -21,9 +21,8 @@
           <myCalendar type="button" />
         </view>
       </view>
-      <!-- :style="'background:'isHaveBook?isHaveBook:''" -->
       <view class="book-box" @click="selectBook()">
-        {{ isHaveBook ? '' : '请选择书籍' }}
+        {{ isHaveBook !== '' ? isHaveBook : '请选择书籍' }}
       </view>
       <view class="progress">
         <progress activeColor="#10AEFF" border-radius="20" show-info="true" :percent="progress" />
@@ -76,8 +75,7 @@ const taskItems = ref([
   { num: 30, name: '未学单词' },
 ])
 const selectBook = () => {
-  console.log('选择书籍')
-  if (!isHaveBook) {
+  if (isHaveBook !== '') {
     message
       .confirm({
         msg: '请选择书籍后再进行学习',
@@ -100,9 +98,12 @@ const getToday = async () => {
 }
 const goToLogin = () => {
   if (store.userInfo.token !== '') {
-    goTo('card')
+    if (isHaveBook !== '') {
+      selectBook()
+    } else {
+      goTo('card')
+    }
   } else {
-    goToLogin()
     message
       .confirm({
         msg: '请先登录',
@@ -196,8 +197,8 @@ onShow(() => {
     height: 300rpx;
     padding: 0 40rpx;
     margin: 40rpx 0 0;
-    line-height: 300rpx;
-    text-align: center;
+    line-height: 104rpx;
+    text-align: left;
     background-color: #39c5bb;
     border-radius: 20rpx;
   }
