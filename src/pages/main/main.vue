@@ -18,7 +18,7 @@
       <view class="bottom">
         <view class="left">Hello~</view>
         <view class="right">
-          <myCalendar type="button" />
+          <wd-button  size="small" @click="goTo('sign')">签到记录</wd-button>
         </view>
       </view>
       <view class="book-box" @click="selectBook()">
@@ -43,29 +43,24 @@
         </view>
       </view>
       <view class="start">
-        <button
-          style="color: #fff; background-color: #10aeff; border-color: #10aeff"
-          size="mini"
-          type="primary"
-          hover-class="button-hover"
-          @click="goToLogin()"
-        >
-          开始学习
-        </button>
+        <wd-button @click="goToLogin()" type="success" block>开始学习</wd-button>
       </view>
     </view>
     <wd-message-box />
+    <wd-toast />
   </view>
 </template>
 
 <script lang="ts" setup>
 // 获取屏幕边界到安全区域距离
+import { useToast } from 'wot-design-uni'
 import { getInfo } from '@/api/login'
 import { useUserStore } from '@/store/user'
 import myCalendar from '@/components/myCalendar.vue'
 import { getProcess, getTodayTask } from '@/api/process/index'
 import { useMessage } from 'wot-design-uni'
 import { onLoad, onShow } from '@dcloudio/uni-app'
+const toast = useToast()
 let store = useUserStore()
 const message = useMessage()
 const { safeAreaInsets } = uni.getSystemInfoSync()
@@ -104,7 +99,11 @@ const goToLogin = () => {
     if (isHaveBook === '') {
       selectBook()
     } else {
-      goTo('card')
+      if(taskItems.value[1].num!==0){
+        goTo('card')
+      }else{
+        toast.show('已经完成今日任务')
+      }
     }
   } else {
     message
@@ -212,8 +211,11 @@ onShow(() => {
     margin: 40rpx 0 0;
     line-height: 104rpx;
     text-align: left;
-    background-color: #39c5bb;
+    background:url("./imgs/OIP-C (3).jpg") 100% no-repeat;
     border-radius: 20rpx;
+    color: #e46e6e;
+    font-size: larger;
+    font-weight: bolder;
   }
 
   .progress {
@@ -262,7 +264,7 @@ onShow(() => {
   .start {
     width: 100%;
     height: 100rpx;
-    margin-top: 40rpx;
+    margin-top: 20rpx;
     text-align: center;
   }
 }

@@ -11,43 +11,82 @@
     <view class="card-box" v-if="curStatus">
       <view class="top">
         <view class="text">
-          {{ char.name }}
+          {{ char.wordName }}
         </view>
       </view>
       <view class="bottom">
-        <view class="box true" @click="changeStatus">认识</view>
-        <view class="box" @click="changeStatus">模糊</view>
-        <view class="box" @click="changeStatus">不认识</view>
+        <view class="box" style="color: #4cd964;border:1px solid #4cd964" @click="recordThisWord(2)">认识</view>
+        <view class="box" style="color: #cdbd2f;border:1px solid #cdbd2f"  @click="recordThisWord(1)">模糊</view>
+        <view class="box" style="color: #dd524d;border:1px solid #dd524d"  @click="recordThisWord(0)">不认识</view>
       </view>
     </view>
     <view class="card-box" v-else>
-      <Details id="1" @changeStatus="changeStatus" />
+      <Details :char="char" @changeStatus="nextWord" @changeFavStatus="changeFavStatus" :is-next-show="true" :is-fav="isFav"/>
     </view>
+    <wd-toast />
   </view>
 </template>
 
 <script lang="ts" setup>
+import { useToast } from 'wot-design-uni'
+import { getTodayTask } from '@/api/process/index'
+import { useUserStore } from '@/store/user'
 import Details from '@/components/Details.vue'
+import {getword,record} from "@/api/vocabulary/index"
 import { onLoad } from '@dcloudio/uni-app'
 import PLATFORM from '@/utils/platform'
 // import avatar from './components/avatar.vue'
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
+const toast = useToast()
+let store = useUserStore()
 const char = ref({
-  name: 'Hello World',
-  type: 'text',
+  wordName:'well',
+  id:'',
+  fav:false
 })
+const isFav = ref(false)
 const goTo = (str) => {
   uni.redirectTo({
     url: `/pages/${str}/main`,
   })
 }
 const curStatus = ref(true)
+const recordThisWord = async (type)=>{
+  console.log(type)
+  let data = {
+    userId:store.userInfo.userId,
+    wordId:char.value.id,
+    level:type
+  }
+  let res = await record(data)
+  changeStatus()
+}
 const changeStatus = () => {
   curStatus.value = !curStatus.value
 }
+const changeFavStatus = () => {
+  isFav.value = !isFav.value
+}
+const getWordById = async ()=>{
+  console.log(store.userInfo.userId)
+  let res = await getword(store.userInfo.userId);
+  char.value =res.data;
+  isFav.value = res.data.fav
+}
+const nextWord = async()=>{
+  let uid = store.userInfo.userId
+  const res = await getTodayTask(uid)
+  let remainder = res.data['待复习']
+  if(remainder<=0){
+    toast.show('已经完成今日任务')
+  }else{
+    changeStatus();
+    getWordById();
+  }
+}
 onLoad((options) => {
-  char.value.name += Math.random().toFixed(2) + ''
+  getWordById()
 })
 </script>
 <style lang="scss" scoped>

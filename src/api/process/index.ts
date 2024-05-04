@@ -1,10 +1,10 @@
 import { http } from '@/utils/http'
 
 /** get 请求 */
-export const updateRecord = (data: any) => {
+export const updatePlan = (data: {userId:number;dailyGoal:number}) => {
   return http<any>({
-    url: `/api/wechat/record`,
-    method: 'POST',
+    url: `/api/wechat/plan/update`,
+    method: 'PUT',
     data,
   })
 }

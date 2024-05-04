@@ -1,8 +1,8 @@
 <route lang="json5">
 {
-  style: {
-    navigationBarTitleText: '我的',
-  },
+style: {
+navigationBarTitleText: '我的',
+},
 }
 </route>
 
@@ -16,23 +16,23 @@
       <view class="desc">微信用户</view>
       <view class="icon-box">
         <view class="box-item" @click="goTo('book')">
-          <wd-icon name="edit-outline" color="#7b7b7b" size="80rpx"></wd-icon>
+          <image src="./icons/验收管理.svg"></image>
           <view class="text">单词书</view>
         </view>
         <view class="box-item" @click="goTo('vocabulary')">
-          <wd-icon name="spool" color="#7b7b7b" size="80rpx"></wd-icon>
+          <image src="./icons/缓存列表.svg"></image>
           <view class="text">生词本</view>
         </view>
-        <view class="box-item">
-          <myCalendar type="'icon'" />
-          <view class="text">计划表</view>
+        <view class="box-item" @click="goTo('sign')">
+          <image src="./icons/打卡.svg"></image>
+          <view class="text">签到记录</view>
         </view>
       </view>
       <view class="hr"></view>
       <view class="item">
         <view class="left">
-          <wd-icon name="view-list" color="#7b7b7b" size="60rpx"></wd-icon>
-          <view class="text">每日学习量</view>
+          <image src="./icons/闹钟.svg" mode="aspectFit" class="img"></image>
+          <view class="text">每日计划</view>
         </view>
         <view class="right">
           <view class="round-border">
@@ -48,42 +48,60 @@
           </view>
         </view>
       </view>
-      <view class="item">
+      <view class="item" @cvlick="withSlot">
         <view class="left">
-          <wd-icon name="rollback" color="#7b7b7b" size="60rpx"></wd-icon>
+          <image src="./icons/喇叭.svg" mode="aspectFit" class="img"></image>
           <view class="text">问题反馈</view>
         </view>
-        <view class="right" @click="showToast">
+        <view class="right">
           <wd-icon name="arrow-right" color="#7b7b7b" size="60rpx"></wd-icon>
         </view>
       </view>
-      <view class="item">
+      <view class="item" @click="showToast">
         <view class="left">
-          <wd-icon name="share" color="#7b7b7b" size="60rpx"></wd-icon>
+          <image src="./icons/分享.svg" class="img"></image>
           <view class="text">分享小程序</view>
         </view>
-        <view class="right" @click="showToast">
+        <view class="right">
           <wd-icon name="arrow-right" color="#7b7b7b" size="60rpx"></wd-icon>
         </view>
       </view>
     </view>
-    <wd-toast />
+    <wd-message-box selector="wd-message-box-slot">
+      <wd-input type="text" label="反馈标题" v-model="feedBackItem.title" placeholder="请输入标题"/>
+      <wd-textarea v-model="feedBackItem.content" placeholder="请填写反馈内容"/>
+    </wd-message-box>
+    <wd-toast/>
   </view>
 </template>
 
 <script lang="ts" setup>
-import { useToast } from 'wot-design-uni'
+import {saveFeedback} from '@/api/feedback'
+import {useMessage} from 'wot-design-uni'
+import {updatePlan} from '@/api/process'
+import {useToast} from 'wot-design-uni'
 import PLATFORM from '@/utils/platform'
 import avatar from './components/avatar.vue'
 import myCalendar from '@/components/myCalendar.vue'
-// 获取屏幕边界到安全区域距离
-const { safeAreaInsets } = uni.getSystemInfoSync()
+import {useUserStore} from '@/store/user'
+import {onLoad, onShow} from '@dcloudio/uni-app'
 
-const value = ref<string>('')
-const handleChange = (event) => {
-  console.log(event)
-}
 const toast = useToast()
+const message = useMessage('wd-message-box-slot')
+// 获取屏幕边界到安全区域距离
+const {safeAreaInsets} = uni.getSystemInfoSync()
+let store = useUserStore()
+const value = ref<string>('')
+const handleChange = async () => {
+  let data = {
+    userId: store.userInfo.userId,
+    dailyGoal: value.value
+  }
+  let res = await updatePlan(data)
+  if (res.code !== 200) {
+    toast.show('因为未知原因，修改失败，请稍后重试')
+  }
+}
 
 const showToast = () => {
   console.log(111)
@@ -95,6 +113,35 @@ const goTo = (str) => {
     url: `/pages/${str}/main`,
   })
 }
+const feedBackItem = ref({
+  title: '',
+  content: ''
+})
+const withSlot = () => {
+  message
+    .confirm({
+      title: '问题反馈'
+    })
+    .then(() => {
+      sendFeedBack()
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}
+const sendFeedBack = async () => {
+  let data = {
+    userId: store.userInfo.userId,
+    ...feedBackItem.value
+  }
+  let res = await saveFeedback(data);
+  if (res.code === 200) {
+    toast.show('反馈成功')
+  }
+}
+onShow(() => {
+  value.value = store.userInfo.dailyGoal
+})
 </script>
 <style lang="scss" scoped>
 .desc {
@@ -114,7 +161,7 @@ const goTo = (str) => {
     display: flex;
     justify-content: space-around;
     width: 100%;
-    margin-top: 40rpx;
+    margin-top: 20rpx;
   }
 
   .text {
@@ -134,8 +181,13 @@ const goTo = (str) => {
     .left {
       display: flex;
       align-items: center;
-      font-size: 30rpx;
+      font-size: 20rpx;
       color: #7b7b7b;
+
+      .img {
+        width: 60rpx;
+        height: 60rpx;
+      }
 
       .text {
         margin-left: 20rpx;

@@ -15,13 +15,12 @@
       custom-class="profile-img"
       @click="upload"
     />
-    <!-- <view style="font-size: 14px">点击上传头像</view> -->
   </view>
 </template>
 
 <script lang="ts" setup>
 const src = ref<string>('')
-const imgSrc = ref<string>('')
+const imgSrc = ref<string>('https://wechat-word.oss-cn-beijing.aliyuncs.com/default_avatar.jpg')
 const show = ref<boolean>(false)
 
 function upload() {

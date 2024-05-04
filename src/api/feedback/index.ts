@@ -1,7 +1,7 @@
 import { http } from '@/utils/http'
 
 /** get 请求 */
-export const saveFeedback = (data: { content: string; userId: string }) => {
+export const saveFeedback = (data: { title: string;content: string; userId: string }) => {
   return http<any>({
     url: `/api/wechat/feedback/save`,
     method: 'POST',

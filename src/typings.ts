@@ -28,6 +28,9 @@ type IUserInfo = {
   phone?: string
   name?: string
   isHaveBook?: string
+  dailyGoal?: number
+  continue?: number
+  sum?: number
 }
 
 enum TestEnum {

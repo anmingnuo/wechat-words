@@ -23,7 +23,7 @@
           <image
             class=""
             :src="item.img"
-            mode="aspectFit|aspectFill|widthFix"
+            mode="aspectFit"
             lazy-load="false"
             binderror=""
             bindload=""
@@ -96,7 +96,7 @@ init()
 <style lang="scss" scoped>
 .main-box {
   flex: 1;
-  background-color: #f5f5f5;
+  background-color: #ffffff;
 }
 
 .card-box {
