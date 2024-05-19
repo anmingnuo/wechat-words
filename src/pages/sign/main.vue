@@ -7,54 +7,66 @@ navigationBarTitleText: '签到',
 </route>
 
 <template>
-  <view class="bg-white overflow-hidden pt-2 px-8 main-box">
-    <view class="card-box calendar">
-      <wd-calendar-view type="dates" v-model="dateArr" @change="handleChange" />
-    </view>
-    <view class="card-box sub-box">
-      <view class="dayBox">
-        <view>连续签单</view>
-        <view>连续签单</view>
-<!--        {{store.userInfo.continue}}-->
-      </view>
-      <view class="dayBox">
-        <view>累计签单</view>
-        <view>连续签单</view>
-<!--        {{store.userInfo.sum}}-->
-      </view>
-    </view>
-    <view class="card-box">
-      <wd-button>签到</wd-button>
-    </view>
+  <view>
+    <!-- 插入模式 -->
+    <uni-calendar
+      class="uni-calendar--hook"
+      :showMonth="true"
+      @change="change"
+      @monthSwitch="monthSwitch"
+      :selected="dateArr"
+    />
   </view>
+  <div class="btn-sign">
+    <wd-button type="success" @click="toSign">签到</wd-button>
+  </div>
+  <wd-divider></wd-divider>
+  <wd-toast />
 </template>
 
 <script lang="ts" setup>
-import Details from '@/components/Details.vue'
-import {getSignList} from '@/api/sign'
+import {getSignList, sign} from '@/api/sign'
 import {useUserStore} from '@/store/user'
+import UniCalendar from '@/components/uni-calendar/uni-calendar.vue'
+import {useToast} from 'wot-design-uni'
 
 const {safeAreaInsets} = uni.getSystemInfoSync()
-let store = useUserStore()
-
-const dateArr = ref([Date.now()])
-
-const handleChange = (e)=>{
-  console.log(e)
-}
+const store = useUserStore()
+const toast = useToast()
+const dateArr = ref([
+  {
+    date: '2024-05-01',
+    info: '已打卡',
+  },
+])
 const goTo = (str) => {
   uni.navigateTo({
     url: `/pages/${str}/main`,
   })
 }
-
-const getDateArr = async ()=>{
-  let res = await getSignList(store.userInfo.userId)
+const change = (e) => {
+  console.log(e)
+}
+const monthSwitch = (e: any) => {
+  const date = e.year + '-' + e.month + '-' + '28'
+  getDateArr(date)
+}
+const getDateArr = async (date) => {
+  const res = await getSignList(store.userInfo.userId, date)
   dateArr.value = res.data
+}
+const toSign = async () => {
+  const userId = store.userInfo.userId
+  const res = await sign(userId)
+  toast.show(res.message)
+  init()
 }
 
 const init = () => {
-  getDateArr()
+  const date = new Date()
+  const month = date.getMonth() + 1
+  const str = date.getFullYear() + '-' + month + '-' + date.getDate()
+  getDateArr(str)
 }
 init()
 </script>
@@ -63,31 +75,10 @@ init()
   background-color: #ffffff;
 }
 
-.card-box {
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  .dayBox {
-    border-top: 1rpx solid #000;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    view {
-      background-color: #red;
-      margin: 10rpx;
-    }
-  }
+.btn-sign {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
-.sub-box {
-  padding: 0 40rpx;
-  margin-top: 16rpx;
-}
-.calendar {
-  height: 60vh!important;
-}
 </style>

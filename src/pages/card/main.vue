@@ -34,8 +34,6 @@ import { useUserStore } from '@/store/user'
 import Details from '@/components/Details.vue'
 import {getword,record} from "@/api/vocabulary/index"
 import { onLoad } from '@dcloudio/uni-app'
-import PLATFORM from '@/utils/platform'
-// import avatar from './components/avatar.vue'
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
 const toast = useToast()
@@ -93,7 +91,7 @@ onLoad((options) => {
 .main-box {
   width: 100%;
   height: 100%;
-  background-color: #f5f5f5;
+  background-color: #ffffff;
 }
 
 .card-box {

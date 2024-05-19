@@ -92,7 +92,6 @@ const changeWord = async ()=>{
 }
 const audioPlay = (type)=>{
   const innerAudioContext = uni.createInnerAudioContext();
-  innerAudioContext.autoplay = false;
   innerAudioContext.src = type==='uk'?char.value.ukSpeech:char.value.usSpeech;
   innerAudioContext.onPlay(() => {
     console.log(char.value.ukSpeech)
@@ -113,7 +112,7 @@ const audioPlay = (type)=>{
   align-items: center;
   width: 80vw;
   height: 80vh;
-  background-color: #f5f5f5;
+  background-color: #ffffff;
 
   .out-top {
     display: flex;

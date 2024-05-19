@@ -1,11 +1,10 @@
-<route lang="json5" type="home">
+<route lang="json5">
 {
 style: {
-navigationBarTitleText: '登录',
+navigationBarTitleText: '注册',
 },
 }
 </route>
-
 <template>
   <view class="bg-white overflow-hidden pt-2 main-box center-container">
     <wd-form ref="form" :model="model">
@@ -33,28 +32,13 @@ navigationBarTitleText: '登录',
       <view class="footer">
         <wd-button type="primary" size="large" @click="handleSubmit" block>提交</wd-button>
       </view>
-      <view class="register">
-        <wd-tag mark plain @click="goToRegister">没有账号，去注册></wd-tag>
-      </view>
     </wd-form>
     <wd-toast/>
-    <wd-message-box/>
   </view>
 </template>
-
 <script lang="ts" setup>
-import {useUserStore} from '@/store/user'
-import {login, getInfo} from '@/api/login'
+import {saveUser} from '@/api/register'
 import {useToast} from 'wot-design-uni'
-import {onLoad} from '@dcloudio/uni-app'
-import {useMessage} from 'wot-design-uni'
-import PLATFORM from '@/utils/platform'
-
-let store = useUserStore()
-const isHaveBook = store.userInfo.isHaveBook
-const {safeAreaInsets} = uni.getSystemInfoSync()
-const {success: showSuccess} = useToast()
-const message = useMessage()
 
 const model = reactive<{
   username: string
@@ -63,7 +47,6 @@ const model = reactive<{
   username: '',
   password: '',
 })
-
 const form = ref()
 const toast = useToast()
 
@@ -72,7 +55,7 @@ function handleSubmit() {
     .validate()
     .then(({valid, errors}) => {
       if (valid) {
-        userLogin()
+        userRegister()
       }
     })
     .catch((error) => {
@@ -80,37 +63,14 @@ function handleSubmit() {
     })
 }
 
-const goTo = (str) => {
-  uni.switchTab({
-    url: `/pages/${str}/main`,
-  })
-}
-const userLogin = async () => {
-  const res = await login({username: model.username, password: model.password})
-  console.log('登录信息', res)
-  let token = res.data.token
-  let info = store.userInfo
-  store.setUserInfo({...info, token})
-  getUserInfo()
-}
-const getUserInfo = async () => {
-  const res = await getInfo()
+const userRegister = async () => {
+  const res = await saveUser({username: model.username, password: model.password})
   toast.show(res.message)
   if (res.code === 200) {
-    let info = store.userInfo
-    store.setUserInfo({ ...info, ...res.data })
     setTimeout(() => {
-      goTo('main')
+      uni.navigateBack()
     }, 1000)
   }
-}
-onLoad((options) => {
-})
-
-const goToRegister = () => {
-  uni.navigateTo({
-    url: '/pages/register/main',
-  })
 }
 </script>
 <style lang="scss" scoped>
@@ -122,12 +82,6 @@ const goToRegister = () => {
   background-color: #ffffff; /* 设置背景色 */
   .footer {
     padding-top: 12px;
-  }
-
-  .register {
-    padding-top: 5px;
-    display: flex;
-    justify-content: flex-end; /* 将内容对齐到右侧 */
   }
 }
 </style>

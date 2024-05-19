@@ -25,12 +25,9 @@ type IUserInfo = {
   openid?: string
   token?: string
   role?: string
-  phone?: string
   name?: string
-  isHaveBook?: string
+  isHaveBook?: number
   dailyGoal?: number
-  continue?: number
-  sum?: number
 }
 
 enum TestEnum {

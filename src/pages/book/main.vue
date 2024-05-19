@@ -9,15 +9,6 @@
 <template>
   <view class="bg-white overflow-hidden pt-2 px-4 main-box">
     <view class="card-box">
-      <view class="input-box">
-        <wd-input
-          prefix-icon="search"
-          type="text"
-          v-model="params.keyword"
-          placeholder="请输入搜索关键词"
-          @change="handleChange"
-        />
-      </view>
       <view class="item" v-for="(item, index) in arr" @click="changeBook(item)">
         <view class="left">
           <image
@@ -36,6 +27,7 @@
       </view>
     </view>
     <wd-message-box />
+    <wd-toast/>
   </view>
 </template>
 
@@ -44,14 +36,16 @@ import PLATFORM from '@/utils/platform'
 import { useUserStore } from '@/store/user'
 import { getBook, saveBook } from '@/api/book'
 import { useMessage } from 'wot-design-uni'
+import {useToast} from "wot-design-uni";
+
 let store = useUserStore()
-// import avatar from './components/avatar.vue'
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
 const message = useMessage()
+
 const arr = ref([])
+const toast=useToast()
 const changeBook = (item) => {
-  console.log(item)
   message
     .confirm({
       msg: `是否选择${item.bookName}进行学习？`,
@@ -64,6 +58,7 @@ const changeBook = (item) => {
     .catch(() => {
       console.log('点击了取消按钮')
     })
+
 }
 const params = ref({
   keyword: '',
@@ -82,11 +77,12 @@ const save = async (bookId) => {
     userId,
   }
   const res = await saveBook(data)
-  console.log('保存书籍', res)
-}
-const handleChange = () => {
-  params.value.page = 1
-  getList()
+  toast.show(res.message)
+  if (res.code===200){
+    setTimeout(() => {
+      uni.navigateBack()
+    }, 500)
+  }
 }
 const init = () => {
   getList()

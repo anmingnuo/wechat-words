@@ -38,3 +38,9 @@ export const getVocabularyList = ({userId,page,size}: { userId: number; page: nu
     method: 'GET'
   })
 }
+export const searchWord = (userId: string,value:string) => {
+  return http<any>({
+    url: `/api/wechat/word/searchWord/${userId}/${value}`,
+    method: 'GET',
+  })
+}

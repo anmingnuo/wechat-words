@@ -1,10 +1,10 @@
 <!-- 使用 type="home" 属性设置首页，其他页面不需要设置，默认为page；推荐使用json5，更强大，且允许注释 -->
-<route lang="json5" type="home">
+<route lang="json5">
 {
-  style: {
-    navigationStyle: 'custom',
-    navigationBarTitleText: '没人背单词',
-  },
+style: {
+navigationStyle: 'custom',
+navigationBarTitleText: '没人背单词',
+},
 }
 </route>
 <template>
@@ -18,14 +18,14 @@
       <view class="bottom">
         <view class="left">Hello~</view>
         <view class="right">
-          <wd-button  size="small" @click="goTo('sign')">签到记录</wd-button>
+          <wd-button plain size="small" icon="search" type="warning" @click="search">搜索单词</wd-button>
         </view>
       </view>
-      <view class="book-box" @click="selectBook()">
-        {{ isHaveBook !== '' ? isHaveBook : '请选择书籍' }}
+      <view class="book-box" @click="goBook">
+        {{ bookName }}
       </view>
       <view class="progress">
-        <progress activeColor="#10AEFF" border-radius="20" show-info="true" :percent="progress" />
+        <progress activeColor="#10AEFF" border-radius="20" show-info="true" :percent="progress"/>
       </view>
       <view class="task">
         <view class="task-top">
@@ -43,35 +43,36 @@
         </view>
       </view>
       <view class="start">
-        <wd-button @click="goToLogin()" type="success" block>开始学习</wd-button>
+        <wd-button @click="startStudy()" type="success" block>开始学习</wd-button>
       </view>
     </view>
-    <wd-message-box />
-    <wd-toast />
+    <wd-message-box/>
+    <wd-toast/>
   </view>
 </template>
 
 <script lang="ts" setup>
 // 获取屏幕边界到安全区域距离
-import { useToast } from 'wot-design-uni'
-import { getInfo } from '@/api/login'
-import { useUserStore } from '@/store/user'
-import myCalendar from '@/components/myCalendar.vue'
-import { getProcess, getTodayTask } from '@/api/process/index'
-import { useMessage } from 'wot-design-uni'
-import { onLoad, onShow } from '@dcloudio/uni-app'
+import {useToast} from 'wot-design-uni'
+import {useUserStore} from '@/store/user'
+import {getProcess, getTodayTask} from '@/api/process/index'
+import {useMessage} from 'wot-design-uni'
+import {onShow} from '@dcloudio/uni-app'
+import {getBookSelectionByUserId, getHaveBook} from "@/api/book";
+
 const toast = useToast()
 let store = useUserStore()
 const message = useMessage()
-const { safeAreaInsets } = uni.getSystemInfoSync()
-let isHaveBook = store.userInfo.isHaveBook
+const {safeAreaInsets} = uni.getSystemInfoSync()
 const progress = ref(60)
 const taskItems = ref([
-  { num: 20, name: '复习单词' },
-  { num: 30, name: '未学单词' },
+  {num: 20, name: '已复习'},
+  {num: 30, name: '待复习'},
 ])
+const isHaveBook = ref(0)
+let bookName = ref('请选择书籍')
 const selectBook = () => {
-  if (isHaveBook === '') {
+  if (isHaveBook.value === 0) {
     message
       .confirm({
         msg: '请选择书籍后再进行学习',
@@ -86,38 +87,44 @@ const selectBook = () => {
       })
   }
 }
-const getToday = async () => {
-  let uid = store.userInfo.userId
-  const res = await getTodayTask(uid)
-  taskItems.value[0].num = res.data['已复习']
-  taskItems.value[1].num = res.data['待复习']
-}
-const goToLogin = () => {
-  console.log(store.userInfo);
-  isHaveBook = store.userInfo.isHaveBook
-  if (store.userInfo.token !== '') {
-    if (isHaveBook === '') {
-      selectBook()
-    } else {
-      if(taskItems.value[1].num!==0){
-        goTo('card')
-      }else{
-        toast.show('已经完成今日任务')
-      }
-    }
-  } else {
+const search=()=>{
+  if (isHaveBook.value === 0) {
     message
       .confirm({
-        msg: '请先登录',
+        msg: '请选择书籍后再进行搜索',
         title: '系统提示',
       })
       .then(() => {
         console.log('点击了确定按钮')
-        goTo('login')
+        goTo('book')
       })
       .catch(() => {
         console.log('点击了取消按钮')
       })
+  }else {
+    goTo('search')
+  }
+
+}
+const getToday = async () => {
+  let uid = store.userInfo.userId
+  const res = await getTodayTask(uid)
+  if (res.code === 200) {
+    taskItems.value[0].num = res.data['已复习']
+    taskItems.value[1].num = res.data['待复习']
+  }
+}
+const startStudy = () => {
+  if (store.userInfo.token !== '') {
+    if (isHaveBook.value === 0) {
+      selectBook()
+    } else {
+      if (taskItems.value[1].num !== 0) {
+        goTo('card')
+      } else {
+        toast.show('已经完成今日任务')
+      }
+    }
   }
 }
 const goTo = (str) => {
@@ -125,33 +132,41 @@ const goTo = (str) => {
     url: `/pages/${str}/main`,
   })
 }
-const getProcessById = async () => {
-  let uid = store.userInfo.userId
-  const res = await getProcess(uid)
-  progress.value = res.data['学习进度']
+const getIsSelect =async ()=>{
+  const  res =await getHaveBook(store.userInfo.userId)
+  if (res.code===200){
+    isHaveBook.value=res.data
+  }
 }
-
-const getUserInfo = async () => {
-  const res = await getInfo()
-  let info = store.userInfo
-  store.setUserInfo({ ...info, ...res.data })
-  isHaveBook = store.userInfo.isHaveBook
-  console.log('用户信息', store.userInfo)
+const getProcessById = async () => {
+  const uid = store.userInfo.userId
+  const res = await getProcess(uid)
+  if (res.code === 200) {
+    progress.value = res.data['学习进度']
+  }
+}
+const getBookName = async () => {
+  const res = await getBookSelectionByUserId(store.userInfo.userId)
+  if (res.code === 200) {
+    bookName.value = res.data.bookName
+  }
 }
 const init = () => {
-  console.log(store.userInfo, 'info')
-  console.log(isHaveBook, 'isHaveBook')
   if (store.userInfo.token === '') {
     goTo('login')
   } else {
     getProcessById()
     getToday()
-    getUserInfo()
+    getBookName()
+    getIsSelect()
   }
 }
 onShow(() => {
   init()
 })
+const goBook=()=>{
+  goTo('book')
+}
 </script>
 
 <style scoped lang="scss">
@@ -163,7 +178,7 @@ onShow(() => {
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  background-color: #f5f5f5;
+  background-color: #ffffff;
 }
 
 .navigation {
@@ -211,7 +226,7 @@ onShow(() => {
     margin: 40rpx 0 0;
     line-height: 104rpx;
     text-align: left;
-    background:url("./imgs/OIP-C (3).jpg") 100% no-repeat;
+    background: url("./imgs/OIP-C (3).jpg") 100% no-repeat;
     border-radius: 20rpx;
     color: #e46e6e;
     font-size: larger;

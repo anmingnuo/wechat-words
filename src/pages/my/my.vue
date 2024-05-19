@@ -38,7 +38,7 @@ navigationBarTitleText: '我的',
           <view class="round-border">
             <wd-input
               type="text"
-              v-model="value"
+              v-model="dailyGoal"
               placeholder="学习量"
               @change="handleChange"
               custom-input-class="wcenter"
@@ -48,7 +48,7 @@ navigationBarTitleText: '我的',
           </view>
         </view>
       </view>
-      <view class="item" @cvlick="withSlot">
+      <view class="item" @click="withSlot">
         <view class="left">
           <image src="./icons/喇叭.svg" mode="aspectFit" class="img"></image>
           <view class="text">问题反馈</view>
@@ -66,6 +66,7 @@ navigationBarTitleText: '我的',
           <wd-icon name="arrow-right" color="#7b7b7b" size="60rpx"></wd-icon>
         </view>
       </view>
+      <wd-button type="error" class="logout" @click="tuichu">退出登录</wd-button>
     </view>
     <wd-message-box selector="wd-message-box-slot">
       <wd-input type="text" label="反馈标题" v-model="feedBackItem.title" placeholder="请输入标题"/>
@@ -78,34 +79,45 @@ navigationBarTitleText: '我的',
 <script lang="ts" setup>
 import {saveFeedback} from '@/api/feedback'
 import {useMessage} from 'wot-design-uni'
-import {updatePlan} from '@/api/process'
+import {updatePlan,} from '@/api/process'
 import {useToast} from 'wot-design-uni'
-import PLATFORM from '@/utils/platform'
 import avatar from './components/avatar.vue'
-import myCalendar from '@/components/myCalendar.vue'
 import {useUserStore} from '@/store/user'
-import {onLoad, onShow} from '@dcloudio/uni-app'
+import {onShow} from '@dcloudio/uni-app'
+import {getPlan} from "@/api/plan";
+import {logout} from "@/api/login";
+import * as url from "url";
 
 const toast = useToast()
 const message = useMessage('wd-message-box-slot')
 // 获取屏幕边界到安全区域距离
 const {safeAreaInsets} = uni.getSystemInfoSync()
 let store = useUserStore()
-const value = ref<string>('')
+const dailyGoal = ref()
+const nickName = ref()
 const handleChange = async () => {
   let data = {
     userId: store.userInfo.userId,
-    dailyGoal: value.value
+    dailyGoal: dailyGoal.value
   }
   let res = await updatePlan(data)
-  if (res.code !== 200) {
-    toast.show('因为未知原因，修改失败，请稍后重试')
+  if (res.code === 200) {
+    toast.show("修改成功")
   }
 }
+const tuichu = async () => {
+  const res = await logout()
+  if (res.code===200){
+    toast.show('退出成功')
+    store.clearUserInfo()
+    uni.reLaunch({
+      url:'/pages/login/main'
+    })
+  }
 
+
+}
 const showToast = () => {
-  console.log(111)
-
   toast.show('暂未开放')
 }
 const goTo = (str) => {
@@ -118,6 +130,7 @@ const feedBackItem = ref({
   content: ''
 })
 const withSlot = () => {
+  console.log(1111)
   message
     .confirm({
       title: '问题反馈'
@@ -139,8 +152,21 @@ const sendFeedBack = async () => {
     toast.show('反馈成功')
   }
 }
+const selectPlan = async () => {
+  const res = await getPlan(store.userInfo.userId)
+  if (res.code === 200) {
+    dailyGoal.value = res.data.dailyGoal
+  }
+}
+
+function init() {
+  nickName.value = store.userInfo.nickname
+  selectPlan()
+}
+
+
 onShow(() => {
-  value.value = store.userInfo.dailyGoal
+  init()
 })
 </script>
 <style lang="scss" scoped>
@@ -213,6 +239,10 @@ onShow(() => {
       }
     }
   }
+}
+
+.logout {
+  padding-top: 20px;
 }
 
 .hr {

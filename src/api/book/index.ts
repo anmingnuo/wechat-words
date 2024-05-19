@@ -1,5 +1,4 @@
 import { http } from '@/utils/http'
-
 /** get 请求 */
 export const getBook = ({ page, size }: { page: number; size: number; keyword?: string }) => {
   return http<any>({
@@ -24,8 +23,20 @@ export const getBookDatilByID = (id: string) => {
 
 export const saveBook = (data: { bookId: number; userId: number }) => {
   return http<any>({
-      url: `/api/wechat/bookSelection/update`,
+    url: `/api/wechat/bookSelection/update`,
     method: 'POST',
     data,
+  })
+}
+export const getHaveBook = (userId: number) => {
+  return http<any>({
+    url: `/api/wechat/bookSelection/getHaveBook/${userId}`,
+    method: 'GET',
+  })
+}
+export const getBookSelectionByUserId = (userId: number) => {
+  return http<any>({
+    url: `/api/wechat/bookSelection/get/${userId}`,
+    method: 'GET',
   })
 }
